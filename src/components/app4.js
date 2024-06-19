@@ -51,7 +51,7 @@ class App4 extends Component {
     const newContatto = {
       nome: formData.get("nome"),
       cognome: formData.get("cognome"),
-      image: formData.get("image"), // This will be a File object if a file is uploaded
+      image: formData.get("image"), 
       email: formData.get("email"),
     };
 

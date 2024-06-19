@@ -16,11 +16,11 @@ function NavbarVert(props) {
         {props.title}
       </h4>
 
-      <ul className="nav flex-column">
+      <ul className="nav flex-column ">
       {vettoreContatti.map((elemento) => (
           <li className="nav-item" key={elemento.id}>
             <Link
-              className="nav-link"
+              className="nav-link text-dark"
               to={`/VisualizzaContatto/${elemento.id}`}
             >
               {Object.values(elemento)
