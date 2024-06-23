@@ -56,7 +56,7 @@ function ViasualizzaContatto(props) {
             ))}
           </div>
         </div>
-        <div className="row mt-3">
+{/*         <div className="row mt-3">
           <div className="col-6">
             <button onClick={redirectToModifica} className="btn btn-dark w-100">
               Modifica
@@ -65,9 +65,9 @@ function ViasualizzaContatto(props) {
           <div className="col-6">
             <button onClick={handleDelete} className="btn btn-dark w-100">
               Cancella
-            </button>
+            </button> 
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

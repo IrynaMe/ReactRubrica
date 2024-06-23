@@ -1,8 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function AddContatto(props) {
   const { vettoreFormInfo, onAddContatto } = props;
-
+  const navigate = useNavigate();
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -17,8 +18,8 @@ function AddContatto(props) {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Success:", result);
-        // Optionally, handle success (e.g., navigate to another page or show a success message)
+        alert("Contatto aggiunto");
+        navigate("/"); // Navigate to home page if no more contacts to navigate
       } else {
         console.error("Error:", response.statusText);
         // Optionally, handle error (e.g., show an error message)

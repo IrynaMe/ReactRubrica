@@ -1,30 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-function ModificaContatto({ vettoreContatti, onUpdateContatto }) {
-  const { id } = useParams();
+function ModificaContatto({ vettoreContatti, onUpdateContatto, selectedContacts, updateSelectedContacts,  handleCheckboxChange}) {
+  
+  const { id } = useParams(); // Assuming you're passing single ID as parameter
   const navigate = useNavigate();
+
+  // Find the contact based on the ID
   const contatto = vettoreContatti.find((contatto) => contatto.id === parseInt(id, 10));
 
   const [formData, setFormData] = useState({
-    nome: contatto.nome,
-    cognome: contatto.cognome,
-    image: contatto.image,
-    email: contatto.email,
-    telefono: contatto.telefono || "", // Ensure telefono is defined or default to empty string
+    nome: "",
+    cognome: "",
+    image: "",
+    email: "",
+    telefono: "",
   });
 
   // Separate state for file input
   const [imageFile, setImageFile] = useState(null);
 
+  // Effect to update formData when contatto changes
+  useEffect(() => {
+    if (contatto) {
+      setFormData({
+        nome: contatto.nome,
+        cognome: contatto.cognome,
+        image: contatto.image,
+        email: contatto.email,
+        telefono: contatto.telefono || "",
+      });
+    }
+  }, [contatto]);
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-
     if (name === "image" && files.length > 0) {
-      // Handle file input separately
       setImageFile(files[0]);
     } else {
-      // Handle other inputs
       setFormData({
         ...formData,
         [name]: value,
@@ -32,18 +45,66 @@ function ModificaContatto({ vettoreContatti, onUpdateContatto }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Prepare updated contact object
     const updatedContatto = {
       ...formData,
-      image: imageFile ? URL.createObjectURL(imageFile) : formData.image, // Use file object or existing URL
+      image: imageFile ? URL.createObjectURL(imageFile) : formData.image,
     };
 
-    onUpdateContatto(parseInt(id, 10), updatedContatto);
-    navigate("/");  // Redirect to PrimaPagina
+    try {
+      const response = await fetch(`http://localhost:8080/scuola/rubricaupdate/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedContatto),
+      });
+
+      if (response.ok) {
+        alert("Contatto aggiornato");
+
+        // Call the onUpdateContatto function to update state in parent component
+        onUpdateContatto(parseInt(id, 10), updatedContatto);
+
+        // Optionally, navigate to the next contact if available
+        navigateNextContact();
+      } else {
+        const errorText = await response.text();
+        console.error("Error:", response.statusText, errorText);
+        alert("Error: " + response.statusText + " - " + errorText);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error: " + error.message);
+    }
   };
+
+// Function to navigate to the next contact
+const navigateNextContact = () => {
+  const currentIndex = selectedContacts.findIndex((contactId) => contactId === parseInt(id, 10));
+  
+  // Remove the updated contact from the selectedContacts array
+  if (currentIndex !== -1) {
+    updateSelectedContacts((prevSelected) =>
+      prevSelected.filter((contactId) => contactId !== parseInt(id, 10))
+    );
+  }
+
+  if (currentIndex !== -1 && currentIndex < selectedContacts.length - 1) {
+    const nextId = selectedContacts[currentIndex + 1];
+    navigate(`/Modifica/${nextId}`);
+    // Optionally handle state update or feedback after bulk update
+    alert("Contatto aggiornato");
+  } else {
+    navigate("/"); // Navigate to home page if no more contacts to navigate
+  }
+};
+
+
+  if (!contatto) {
+    return <div>Loading...</div>; // Add a loading indicator while contatto is being fetched
+  }
 
   return (
     <div className="container mt-5">
@@ -72,37 +133,17 @@ function ModificaContatto({ vettoreContatti, onUpdateContatto }) {
                 value={formData[key]}
                 placeholder={formData[key]}
                 required
+                disabled={key !== "image" && key !== "email" && key !== "telefono"}
               />
             )}
           </div>
         ))}
-        <button type="submit" className="btn btn-dark">Salva Modifiche</button>
+        <button type="submit" className="btn btn-dark">
+          Salva Modifiche
+        </button>
       </form>
     </div>
   );
 }
 
 export default ModificaContatto;
-
-
-
-  {/*       <div className="mb-3">
-          <label className="form-label">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="form-control"
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Image URL</label>
-          <input
-            type="text"
-            name="image"
-            value={formData.image}
-            onChange={handleChange}
-            className="form-control"
-          />
-        </div> */}

@@ -5,12 +5,13 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import App4 from './components/app4';
 import App5 from './components/app5';
+import App6 from './components/app6';
 import 'bootstrap/dist/css/bootstrap.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App5 />
+    <App6 />
   </React.StrictMode>
 );
 
