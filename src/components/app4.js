@@ -6,6 +6,7 @@ import PrimaPagina from "./primaPaggina";
 import userFoto from "../images/user1.png";
 import ViasualizzaContatto from "./visualizzaContatto";
 import AddContatto from "./addContatto";
+import ModificaContatto from "./modificaContatto";
 
 class App4 extends Component {
   state = {
@@ -16,6 +17,8 @@ class App4 extends Component {
         cognome: "Rossi",
         image: userFoto,
         email: "mariorossi@gmail.com",
+        telefono:"+39351124568",
+        stato: 1,
       },
       {
         id: 2,
@@ -23,6 +26,8 @@ class App4 extends Component {
         cognome: "Verdi",
         image: userFoto,
         email: "mariverdi@gmail.com",
+        telefono:"+39248888888",
+        stato: 1,
       },
       {
         id: 3,
@@ -30,6 +35,8 @@ class App4 extends Component {
         cognome: "Bianchi",
         image: userFoto,
         email: "giabia@gmail.com",
+        telefono:"+39352223336",
+        stato: 1,
       },
       {
         id: 4,
@@ -37,11 +44,21 @@ class App4 extends Component {
         cognome: "Garibaldi",
         image: userFoto,
         email: "luigari@gmail.com",
+        telefono:"+39354456998",
+        stato: 1,
       },
     ],
   };
 
-  formInfo = ["nome", "cognome", "image", "email"];
+  formInfo = ["nome", "cognome", "image", "email", "telefono"];
+
+  cancella = (id) => {
+    this.setState((prevState) => ({
+      contatti: prevState.contatti.map((contatto) =>
+        contatto.id === id ? { ...contatto, stato: 0 } : contatto
+      ),
+    }));
+  };
 
   handleAddContatto = (e) => {
     e.preventDefault();
@@ -51,8 +68,9 @@ class App4 extends Component {
     const newContatto = {
       nome: formData.get("nome"),
       cognome: formData.get("cognome"),
-      image: formData.get("image"), 
+      image: formData.get("image"),
       email: formData.get("email"),
+      stato: 1,
     };
 
     const maxId = this.state.contatti.reduce((max, contatto) => {
@@ -72,24 +90,60 @@ class App4 extends Component {
     // You can use react-router-dom's history or Link component for navigation
   };
 
+  handleUpdateContatto = (id, updatedContatto) => {
+    this.setState((prevState) => ({
+      contatti: prevState.contatti.map((contatto) =>
+        contatto.id === id ? { ...contatto, ...updatedContatto } : contatto
+      ),
+    }));
+  };
+
   render() {
     return (
       <BrowserRouter>
         <Routes>
           <Route
             path="/"
-            element={<Layout vettoreContatti={this.state.contatti} title="Visualizza contatti" />}
+            element={
+              <Layout
+                vettoreContatti={this.state.contatti}
+                title="Visualizza contatti"
+              />
+            }
           >
             <Route index element={<PrimaPagina title="Prima paggina" />} />
 
             <Route
               path="/VisualizzaContatto/:indiceUtente"
-              element={<ViasualizzaContatto vettoreContatti={this.state.contatti} title="Dettagli del contatto" />}
+              element={
+                <ViasualizzaContatto
+                  vettoreContatti={this.state.contatti}
+                  title="Dettagli del contatto"
+                  elimina={this.cancella}
+                />
+              }
             />
 
             <Route
               path="/addContatto"
-              element={<AddContatto vettoreFormInfo={this.formInfo} title="Aggiungi un nuovo contatto" onAddContatto={this.handleAddContatto} />}
+              element={
+                <AddContatto
+                  vettoreFormInfo={this.formInfo}
+                  title="Aggiungi un nuovo contatto"
+                  onAddContatto={this.handleAddContatto}
+                />
+              }
+            />
+
+            <Route
+              path="/Modifica/:id"
+              element={
+                <ModificaContatto
+                  vettoreContatti={this.state.contatti}
+                  onUpdateContatto={this.handleUpdateContatto}
+                  formInform={this.formInfo}
+                />
+              }
             />
           </Route>
         </Routes>

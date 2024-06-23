@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function NavbarVert(props) {
-  const { vettoreContatti } = props;
+function NavbarVert({vettoreContatti, title}) {
+
 
   return (
     <nav className="bg-warning px-2 py-4" style={{ height: "100vh" }}>
@@ -10,26 +10,33 @@ function NavbarVert(props) {
         <button className="btn btn-dark">Aggiungi contatto</button>
       </Link>
       <h4
-        style={{ margin: "15px" }}
+        style={{ margin: "15px"}}
         //  style={{ textAlign:'center' }}
       >
-        {props.title}
+        {title}
       </h4>
 
       <ul className="nav flex-column ">
-      {vettoreContatti.map((elemento) => (
-          <li className="nav-item" key={elemento.id}>
-            <Link
-              className="nav-link text-dark"
-              to={`/VisualizzaContatto/${elemento.id}`}
-            >
-              {Object.values(elemento)
-              // Exclude arr values 0,3,4-visualize only nome cognome
-                .filter((value, index) => index !== 0&&index!==3&&index!==4) 
-                .join(' ')}
-            </Link>
-          </li>
-        ))}
+      
+        {vettoreContatti
+        
+          //.filter((elemento) => elemento.stato === 1) // Filter elements where stato is 1
+          .map((elemento) => (
+            <li className="nav-item" key={elemento.id}>
+              <Link
+                className="nav-link text-dark"
+                to={`/VisualizzaContatto/${elemento.id}`}
+              >
+                {Object.values(elemento)
+                  // Exclude arr values 0, 3, 4, 5 -  visualize only nome cognome
+                  .filter(
+                    (value, index) =>
+                      index !== 0 && index !== 3 && index !== 4 && index !== 5 &&index!==6
+                  )
+                  .join(" ")}
+              </Link>
+            </li>
+          ))}
       </ul>
     </nav>
   );
