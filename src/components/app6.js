@@ -1,6 +1,4 @@
-
-
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "../App.css";
 import Layout from "./layout";
@@ -13,24 +11,24 @@ import ModificaContatto from "./modificaContatto";
 function App6(props) {
   const [vettoreContatti, aggiornaVettore] = useState([]);
   const [selectedContacts, setSelectedContacts] = useState([]);
+  const ip_server = window.ip_server_rest;
+  const porta_server = window.porta_server_rest;
 
-    // Function to update selectedContacts
-    const updateSelectedContacts = (newContacts) => {
-        setSelectedContacts(newContacts);
-    };
+  const updateSelectedContacts = (newContacts) => {
+    setSelectedContacts(newContacts);
+  };
 
-    const handleCheckboxChange = (id) => {
-      setSelectedContacts((prevSelected) =>
-        prevSelected.includes(id)
-          ? prevSelected.filter((contactId) => contactId !== id)
-          : [...prevSelected, id]
-      );
-    };
-
+  const handleCheckboxChange = (id) => {
+    setSelectedContacts((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((contactId) => contactId !== id)
+        : [...prevSelected, id]
+    );
+  };
 
   const getData = () => {
     console.log("Making fetch request to server");
-    const url = "http://127.0.0.1:8080/scuola/rubricadb";
+    const url = "http://" + ip_server + ":" + porta_server + "/scuola/rubricadb";
     fetch(url, { method: "GET" })
       .then((response) => response.json())
       .then((data) => {
@@ -44,11 +42,9 @@ function App6(props) {
 
   useEffect(() => {
     getData();
-    // const intervalId = setInterval(getData, 5000);
-    // return () => clearInterval(intervalId);
   }, []);
 
-  const formInfo = ["nome", "cognome", "image", "email", "telefono", "stato"];
+  const formInfo = ["nome", "cognome", "image", "email", "telefono", "citta","indirizzo", "nascita","stato"];
 
   const cancella = (id) => {
     aggiornaVettore((prevContatti) =>
@@ -60,12 +56,13 @@ function App6(props) {
 
   const handleAddContatto = async (e) => {
     e.preventDefault();
-
     const formData = new FormData(e.target);
     formData.append("stato", "1");
 
+ // Format data di nascita as a date string (assuming it's a Date object)
+ formData.append("nascita", formData.get("nascita").toISOString());
     try {
-      const response = await fetch("http://localhost:8080/scuola/rubricainsert", {
+      const response = await fetch("http://" + ip_server + ":" + porta_server + "/scuola/rubricainsert", {
         method: "POST",
         body: formData,
       });
@@ -81,11 +78,13 @@ function App6(props) {
           image: formData.get("image"),
           email: formData.get("email"),
           telefono: formData.get("telefono"),
+          città:formData.get("citta"),
+          indirizzo:formData.get("indirizzo"),
+          nascita:formData.get("nascita"),
           stato: 1,
         };
 
         aggiornaVettore((prevContatti) => [...prevContatti, newContatto]);
-
       } else {
         const errorText = await response.text();
         console.error("Error:", response.statusText, errorText);
@@ -105,13 +104,15 @@ function App6(props) {
     );
   };
 
-   const handleBulkDelete = (selectedContacts) => {
+  const handleBulkDelete = (selectedContacts) => {
     aggiornaVettore((prevContatti) =>
       prevContatti.map((contatto) =>
-        selectedContacts.includes(contatto.id) ? { ...contatto, stato: 0 } : contatto
+        selectedContacts.includes(contatto.id)
+          ? { ...contatto, stato: 0 }
+          : contatto
       )
     );
-  }; 
+  };
 
   return (
     <BrowserRouter>
@@ -123,14 +124,14 @@ function App6(props) {
               vettoreContatti={vettoreContatti}
               title="Visualizza contatti"
               onBulkDelete={handleBulkDelete}
-              selectedContacts={selectedContacts} 
+              selectedContacts={selectedContacts}
               updateSelectedContacts={updateSelectedContacts}
               handleCheckboxChange={handleCheckboxChange}
               setSelectedContacts={setSelectedContacts}
             />
           }
         >
-          <Route index element={<PrimaPagina title="Prima paggina" />} />
+          <Route index element={<PrimaPagina title="Benvenuti alla rubrica" />} />
 
           <Route
             path="/VisualizzaContatto/:indiceUtente"
@@ -139,6 +140,7 @@ function App6(props) {
                 vettoreContatti={vettoreContatti}
                 title="Dettagli del contatto"
                 elimina={cancella}
+                userFoto={userFoto}
               />
             }
           />
@@ -154,24 +156,23 @@ function App6(props) {
             }
           />
 
-           <Route
+          <Route
             path="/Modifica/:id"
             element={
               <ModificaContatto
                 vettoreContatti={vettoreContatti}
                 onUpdateContatto={handleUpdateContatto}
                 formInform={formInfo}
-                selectedContacts={selectedContacts} 
-              updateSelectedContacts={updateSelectedContacts}
-              handleCheckboxChange={handleCheckboxChange}
+                selectedContacts={selectedContacts}
+                updateSelectedContacts={updateSelectedContacts}
+                handleCheckboxChange={handleCheckboxChange}
               />
             }
-          /> 
-       {/* <Route path="/Modifica/:ids" component={ModificaContatto} /> */}
+          />
         </Route>
       </Routes>
     </BrowserRouter>
   );
 }
 
-export default App6; 
+export default App6;

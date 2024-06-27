@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-function ModificaContatto({ vettoreContatti, onUpdateContatto, selectedContacts, updateSelectedContacts,  handleCheckboxChange}) {
+function ModificaContatto({ vettoreContatti, onUpdateContatto, selectedContacts, updateSelectedContacts, handleCheckboxChange }) {
   
   const { id } = useParams(); // Assuming you're passing single ID as parameter
   const navigate = useNavigate();
@@ -15,6 +15,8 @@ function ModificaContatto({ vettoreContatti, onUpdateContatto, selectedContacts,
     image: "",
     email: "",
     telefono: "",
+    citta: "",
+    indirizzo: "",
   });
 
   // Separate state for file input
@@ -29,6 +31,8 @@ function ModificaContatto({ vettoreContatti, onUpdateContatto, selectedContacts,
         image: contatto.image,
         email: contatto.email,
         telefono: contatto.telefono || "",
+        citta: contatto.citta || "",
+        indirizzo: contatto.indirizzo || "",
       });
     }
   }, [contatto]);
@@ -52,13 +56,21 @@ function ModificaContatto({ vettoreContatti, onUpdateContatto, selectedContacts,
       image: imageFile ? URL.createObjectURL(imageFile) : formData.image,
     };
 
+    const submissionData = new FormData(); 
+    submissionData.append("nome", updatedContatto.nome);
+    submissionData.append("cognome", updatedContatto.cognome);
+    submissionData.append("email", updatedContatto.email);
+    submissionData.append("telefono", updatedContatto.telefono);
+    submissionData.append("citta", updatedContatto.citta);
+    submissionData.append("indirizzo", updatedContatto.indirizzo);
+    if (imageFile) {
+      submissionData.append("image", imageFile);
+    }
+
     try {
       const response = await fetch(`http://localhost:8080/scuola/rubricaupdate/${id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedContatto),
+        body: submissionData,
       });
 
       if (response.ok) {
@@ -80,27 +92,26 @@ function ModificaContatto({ vettoreContatti, onUpdateContatto, selectedContacts,
     }
   };
 
-// Function to navigate to the next contact
-const navigateNextContact = () => {
-  const currentIndex = selectedContacts.findIndex((contactId) => contactId === parseInt(id, 10));
-  
-  // Remove the updated contact from the selectedContacts array
-  if (currentIndex !== -1) {
-    updateSelectedContacts((prevSelected) =>
-      prevSelected.filter((contactId) => contactId !== parseInt(id, 10))
-    );
-  }
+  // Function to navigate to the next contact
+  const navigateNextContact = () => {
+    const currentIndex = selectedContacts.findIndex((contactId) => contactId === parseInt(id, 10));
+    
+    // Remove the updated contact from the selectedContacts array
+    if (currentIndex !== -1) {
+      updateSelectedContacts((prevSelected) =>
+        prevSelected.filter((contactId) => contactId !== parseInt(id, 10))
+      );
+    }
 
-  if (currentIndex !== -1 && currentIndex < selectedContacts.length - 1) {
-    const nextId = selectedContacts[currentIndex + 1];
-    navigate(`/Modifica/${nextId}`);
-    // Optionally handle state update or feedback after bulk update
-    alert("Contatto aggiornato");
-  } else {
-    navigate("/"); // Navigate to home page if no more contacts to navigate
-  }
-};
-
+    if (currentIndex !== -1 && currentIndex < selectedContacts.length - 1) {
+      const nextId = selectedContacts[currentIndex + 1];
+      navigate(`/Modifica/${nextId}`);
+      // Optionally handle state update or feedback after bulk update
+      alert("Contatto aggiornato");
+    } else {
+      navigate("/"); // Navigate to home page if no more contacts to navigate
+    }
+  };
 
   if (!contatto) {
     return <div>Loading...</div>; // Add a loading indicator while contatto is being fetched
@@ -132,8 +143,8 @@ const navigateNextContact = () => {
                 name={key}
                 value={formData[key]}
                 placeholder={formData[key]}
-                required
-                disabled={key !== "image" && key !== "email" && key !== "telefono"}
+                required={key === "nome" || key === "cognome" || key === "email" || key === "telefono"}
+                disabled={key === "nascita"}
               />
             )}
           </div>

@@ -43,10 +43,12 @@ const handleBulkUpdate = () => {
   }
 };
 
+
+
   return (
-    <nav className="bg-warning px-2 py-4" style={{ height: "100vh" }}>
+    <nav className=" px-2 py-4" style={{ height: "100vh", background:"#ffbd37" }}>
       <h4 style={{ margin: "15px" }}>{title}</h4>
-      <ul className="nav flex-column">
+      <ul className="nav flex-column" >
         {vettoreContatti
           .filter((elemento) => elemento.stato === 1)
           .map((elemento) => (

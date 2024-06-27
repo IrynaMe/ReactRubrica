@@ -42,7 +42,7 @@ function AddContatto(props) {
             </label>
             <input
               required
-              type={elem === "image" ? "file" : "text"}
+              type={elem === "image" ? "file" : elem === "nascita" ? "date" : "text"}
               className="form-control"
               id={`input-${elem}`}
               name={elem}
