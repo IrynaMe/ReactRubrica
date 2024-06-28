@@ -1,26 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-function ModificaContatto({ vettoreContatti, onUpdateContatto, selectedContacts, updateSelectedContacts, handleCheckboxChange }) {
-  
+function ModificaContatto({
+  vettoreContatti,
+  onUpdateContatto,
+  selectedContacts,
+  updateSelectedContacts,
+  handleCheckboxChange,
+}) {
   const { id } = useParams(); // Assuming you're passing single ID as parameter
   const navigate = useNavigate();
 
-  // Find the contact based on the ID
-  const contatto = vettoreContatti.find((contatto) => contatto.id === parseInt(id, 10));
+  // Separate state for file input
+  const [imageFile, setImageFile] = useState(null);
 
+  const contatto = vettoreContatti.find(
+    (contatto) => contatto.id === parseInt(id, 10)
+  );
   const [formData, setFormData] = useState({
     nome: "",
     cognome: "",
-    image: "",
+    nascita: "",
     email: "",
     telefono: "",
     citta: "",
     indirizzo: "",
+    image: "",
   });
-
-  // Separate state for file input
-  const [imageFile, setImageFile] = useState(null);
 
   // Effect to update formData when contatto changes
   useEffect(() => {
@@ -28,7 +34,8 @@ function ModificaContatto({ vettoreContatti, onUpdateContatto, selectedContacts,
       setFormData({
         nome: contatto.nome,
         cognome: contatto.cognome,
-        image: contatto.image,
+        nascita: contatto.nascita || "",
+        image: contatto.image || "",
         email: contatto.email,
         telefono: contatto.telefono || "",
         citta: contatto.citta || "",
@@ -56,22 +63,28 @@ function ModificaContatto({ vettoreContatti, onUpdateContatto, selectedContacts,
       image: imageFile ? URL.createObjectURL(imageFile) : formData.image,
     };
 
-    const submissionData = new FormData(); 
+    const submissionData = new FormData();
     submissionData.append("nome", updatedContatto.nome);
     submissionData.append("cognome", updatedContatto.cognome);
+    submissionData.append("nascita", updatedContatto.nascita); // Append nascita to FormData
     submissionData.append("email", updatedContatto.email);
+
     submissionData.append("telefono", updatedContatto.telefono);
     submissionData.append("citta", updatedContatto.citta);
     submissionData.append("indirizzo", updatedContatto.indirizzo);
+
     if (imageFile) {
       submissionData.append("image", imageFile);
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/scuola/rubricaupdate/${id}`, {
-        method: "PUT",
-        body: submissionData,
-      });
+      const response = await fetch(
+        `http://localhost:8080/scuola/rubricaupdate/${id}`,
+        {
+          method: "PUT",
+          body: submissionData,
+        }
+      );
 
       if (response.ok) {
         alert("Contatto aggiornato");
@@ -94,8 +107,10 @@ function ModificaContatto({ vettoreContatti, onUpdateContatto, selectedContacts,
 
   // Function to navigate to the next contact
   const navigateNextContact = () => {
-    const currentIndex = selectedContacts.findIndex((contactId) => contactId === parseInt(id, 10));
-    
+    const currentIndex = selectedContacts.findIndex(
+      (contactId) => contactId === parseInt(id, 10)
+    );
+
     // Remove the updated contact from the selectedContacts array
     if (currentIndex !== -1) {
       updateSelectedContacts((prevSelected) =>
@@ -119,37 +134,45 @@ function ModificaContatto({ vettoreContatti, onUpdateContatto, selectedContacts,
 
   return (
     <div className="container mt-5">
-      <h3>Modifica Contatto</h3>
-      <form onSubmit={handleSubmit}>
-        {Object.keys(formData).map((key) => (
-          <div key={key} className="mb-3">
-            <label htmlFor={`input-${key}`} className="form-label">
-              {key.charAt(0).toUpperCase() + key.slice(1)}:
-            </label>
-            {key === "image" ? (
-              <input
-                onChange={handleChange}
-                type="file"
-                className="form-control"
-                id={`input-${key}`}
-                name={key}
-              />
-            ) : (
-              <input
-                onChange={handleChange}
-                type="text"
-                className="form-control"
-                id={`input-${key}`}
-                name={key}
-                value={formData[key]}
-                placeholder={formData[key]}
-                required={key === "nome" || key === "cognome" || key === "email" || key === "telefono"}
-                disabled={key === "nascita"}
-              />
-            )}
-          </div>
-        ))}
-        <button type="submit" className="btn btn-dark">
+      <h3 style={{textAlign:"center"}}>Modifica Contatto</h3>
+      <hr></hr>
+      <form onSubmit={handleSubmit} >
+        <div className="row">
+          {Object.keys(formData).map((key) => (
+            <div key={key} className="col-md-6 mb-3">
+              <label htmlFor={`input-${key}`} className="form-label">
+                {key.charAt(0).toUpperCase() + key.slice(1)}
+                {/* {key !== "telefono" && <span style={{ color: "red" }}> *</span>}: */}
+              </label>
+              {key === "image" ? (
+                <input
+                  onChange={handleChange}
+                  type="file"
+                  className="form-control"
+                  id={`input-${key}`}
+                  name={key}
+                />
+              ) : (
+                <input
+                  onChange={handleChange}
+                  type={key === "nascita" ? "date" : "text"}
+                  className="form-control"
+                  id={`input-${key}`}
+                  name={key}
+                  value={formData[key]}
+                  placeholder={formData[key]} // Display placeholder if value is empty
+                //  required={key === "nome" || key === "cognome" || key === "email"}
+                  disabled={key === "nascita" || key === "nome" || key === "cognome" || key === "email"} // Disable nascita field
+                />
+              )}
+            </div>
+          ))}
+        </div>
+       {/*  <p style={{ fontStyle: "italic", color: "gray" }}>
+          I campi contrassegnati con "*" sono obbligatori.
+        </p> */}
+
+        <button type="submit" className="btn btn-dark my-4" >
           Salva Modifiche
         </button>
       </form>

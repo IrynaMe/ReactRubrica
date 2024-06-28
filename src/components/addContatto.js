@@ -31,26 +31,35 @@ function AddContatto(props) {
   };
 
   return (
-    <div className="p-4">
-      <h3>{props.title}</h3>
-
+    <div className="container mt-5">
+      <h3 style={{ textAlign: "center" }}>{props.title}</h3>
+      <hr />
       <form onSubmit={handleSubmit}>
-        {vettoreFormInfo.map((elem) => (
-          <div key={elem} className="mb-3">
-            <label htmlFor={`input-${elem}`} className="form-label">
-              {elem}:
-            </label>
-            <input
-              required
-              type={elem === "image" ? "file" : elem === "nascita" ? "date" : "text"}
-              className="form-control"
-              id={`input-${elem}`}
-              name={elem}
-            />
-          </div>
-        ))}
-
-        <button type="submit" className="btn btn-dark">
+        <div className="row">
+          {vettoreFormInfo.map((elem, index) => (
+            <div key={elem} className="col-md-6 mb-3">
+              <label htmlFor={`input-${elem}`} className="form-label">
+                {elem.charAt(0).toUpperCase() + elem.slice(1)}:
+                {["nome", "cognome", "email"].includes(elem) && (
+                  <span style={{ color: "red" }}>*</span>
+                )}
+              </label>
+              <input
+                required={["nome", "cognome", "email"].includes(elem)}
+                type={elem === "image" ? "file" : elem === "nascita" ? "date" : "text"}
+                className="form-control"
+                id={`input-${elem}`}
+                name={elem}
+                pattern={elem === "email" ? "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}" : undefined}
+                title={elem === "email" ? "Inserisci un indirizzo email valido" : undefined}
+              />
+            </div>
+          ))}
+        </div>
+        <p style={{ fontStyle: "italic", color: "gray" }}>
+          I campi contrassegnati con "*" sono obbligatori.
+        </p>
+        <button type="submit" className="btn btn-dark my-4">
           Invia
         </button>
       </form>

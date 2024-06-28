@@ -1,5 +1,5 @@
 import React from 'react';
-import bgImg from "../images/bg3.png";
+import bgImg from "../images/background1.png";
 
 function PrimaPagina(props) {
 

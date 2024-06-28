@@ -11,6 +11,7 @@ import ModificaContatto from "./modificaContatto";
 function App6(props) {
   const [vettoreContatti, aggiornaVettore] = useState([]);
   const [selectedContacts, setSelectedContacts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const ip_server = window.ip_server_rest;
   const porta_server = window.porta_server_rest;
 
@@ -128,6 +129,7 @@ function App6(props) {
               updateSelectedContacts={updateSelectedContacts}
               handleCheckboxChange={handleCheckboxChange}
               setSelectedContacts={setSelectedContacts}
+              loading={loading} // Pass loading state to Layout x evitare errore when server is down
             />
           }
         >
