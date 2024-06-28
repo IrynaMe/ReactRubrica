@@ -17,21 +17,21 @@ public class Rubrica implements Serializable {
     private String image;
     private String email;
     private String telefono;
-    private String citta;
+    private String comune;
    private String indirizzo;
    private LocalDate nascita;
-    private int stato;
+    private int abilitato;
 
-    public Rubrica(String nome, String cognome, String image, String email, String telefono, String citta, String indirizzo, LocalDate nascita, int stato) {
+    public Rubrica(String nome, String cognome, String image, String email, String telefono, String comune, String indirizzo, LocalDate nascita, int abilitato) {
         this.nome = nome;
         this.cognome = cognome;
         this.image = image;
         this.email = email;
         this.telefono = telefono;
-        this.citta = citta;
+        this.comune = comune;
         this.indirizzo = indirizzo;
         this.nascita = nascita;
-        this.stato = stato;
+        this.abilitato = abilitato;
     }
 }
 

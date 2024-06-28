@@ -13,6 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ScuolaWebService2</name>
 	<description>Spring Boot with Angular</description>
+	<packaging>war</packaging> <!-- Set packaging type to WAR -->
 	<properties>
 		<java.version>17</java.version>
 	</properties>
