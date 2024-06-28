@@ -75,7 +75,7 @@ function NavbarVert({
       >
         <ul className="nav flex-column">
           {sortedContatti
-            .filter((elemento) => elemento.stato === 1)
+            .filter((elemento) => elemento.abilitato === 1)
             .map((elemento) => (
               <li
                 className="nav-item d-flex align-items-center"

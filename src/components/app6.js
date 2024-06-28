@@ -3,10 +3,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "../App.css";
 import Layout from "./layout";
 import PrimaPagina from "./primaPaggina";
-import userFoto from "../images/user1.png";
+//import userFoto from "../images/user1.png";
 import ViasualizzaContatto from "./visualizzaContatto";
 import AddContatto from "./addContatto";
 import ModificaContatto from "./modificaContatto";
+import comuniFile from "../files/comuni.csv";
 
 function App6(props) {
   const [vettoreContatti, aggiornaVettore] = useState([]);
@@ -14,6 +15,26 @@ function App6(props) {
   const [loading, setLoading] = useState(true);
   const ip_server = window.ip_server_rest;
   const porta_server = window.porta_server_rest;
+  
+const readCsvFile = async (filePath) => {
+  try {
+    const response = await fetch(filePath);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ${filePath}: ${response.statusText}`);
+    }
+    const csvText = await response.text();
+    console.log("CSV Text:", csvText); // Debugging output
+
+    const rows = csvText.split("\n").map(row => row.trim()).filter(row => row !== '');
+    const data = rows.map((comune) => ({ comune }));
+    console.log("Parsed Data:", data); // Debugging output
+
+    return data;
+  } catch (error) {
+    console.error("Error reading CSV file:", error);
+    return [];
+  }
+};
 
   const updateSelectedContacts = (newContacts) => {
     setSelectedContacts(newContacts);
@@ -45,12 +66,12 @@ function App6(props) {
     getData();
   }, []);
 
-  const formInfo = ["nome", "cognome", "image", "email", "telefono", "citta","indirizzo", "nascita","stato"];
+  const formInfo = ["nome", "cognome", "image", "email", "telefono", "comune","indirizzo", "nascita"]; 
 
   const cancella = (id) => {
     aggiornaVettore((prevContatti) =>
       prevContatti.map((contatto) =>
-        contatto.id === id ? { ...contatto, stato: 0 } : contatto
+        contatto.id === id ? { ...contatto, abilitato: 0 } : contatto
       )
     );
   };
@@ -58,7 +79,7 @@ function App6(props) {
   const handleAddContatto = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    formData.append("stato", "1");
+    formData.append("abilitato", "1");
 
  // Format data di nascita as a date string (assuming it's a Date object)
  formData.append("nascita", formData.get("nascita").toISOString());
@@ -76,13 +97,13 @@ function App6(props) {
           id: result.id,
           nome: formData.get("nome"),
           cognome: formData.get("cognome"),
-          image: formData.get("image"),
+          image: formData.get("image")||null,
           email: formData.get("email"),
-          telefono: formData.get("telefono"),
-          città:formData.get("citta"),
-          indirizzo:formData.get("indirizzo"),
-          nascita:formData.get("nascita"),
-          stato: 1,
+          telefono: formData.get("telefono")||"",
+          comune:formData.get("comune")||"",
+          indirizzo:formData.get("indirizzo")||"",
+          nascita:formData.get("nascita")||null,
+          abilitato: 1,
         };
 
         aggiornaVettore((prevContatti) => [...prevContatti, newContatto]);
@@ -109,7 +130,7 @@ function App6(props) {
     aggiornaVettore((prevContatti) =>
       prevContatti.map((contatto) =>
         selectedContacts.includes(contatto.id)
-          ? { ...contatto, stato: 0 }
+          ? { ...contatto, abilitato: 0 }
           : contatto
       )
     );
@@ -142,7 +163,7 @@ function App6(props) {
                 vettoreContatti={vettoreContatti}
                 title="Dettagli del contatto"
                 elimina={cancella}
-                userFoto={userFoto}
+                
               />
             }
           />
@@ -154,6 +175,7 @@ function App6(props) {
                 vettoreFormInfo={formInfo}
                 title="Aggiungi un nuovo contatto"
                 onAddContatto={handleAddContatto}
+                readCsvFile={readCsvFile}
               />
             }
           />
@@ -168,6 +190,7 @@ function App6(props) {
                 selectedContacts={selectedContacts}
                 updateSelectedContacts={updateSelectedContacts}
                 handleCheckboxChange={handleCheckboxChange}
+                readCsvFile={readCsvFile}
               />
             }
           />

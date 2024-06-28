@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import comuniFile from "../files/comuni.csv";
 
 function ModificaContatto({
   vettoreContatti,
@@ -7,47 +8,67 @@ function ModificaContatto({
   selectedContacts,
   updateSelectedContacts,
   handleCheckboxChange,
+  readCsvFile, // Prop for reading CSV file
 }) {
-  const { id } = useParams(); // Assuming you're passing single ID as parameter
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  // Separate state for file input
   const [imageFile, setImageFile] = useState(null);
-
-  const contatto = vettoreContatti.find(
-    (contatto) => contatto.id === parseInt(id, 10)
-  );
   const [formData, setFormData] = useState({
     nome: "",
     cognome: "",
     nascita: "",
     email: "",
     telefono: "",
-    citta: "",
+    comune: "",
     indirizzo: "",
     image: "",
   });
+  const [comuni, setComuni] = useState([]);
+  const [telefono, setTelefono] = useState("");
+  const handleGoHome = () => {
+    navigate("/"); // Redirect to PrimaPagina
+  };
 
-  // Effect to update formData when contatto changes
   useEffect(() => {
+    const loadComuni = async () => {
+      try {
+        const data = await readCsvFile(comuniFile);
+        setComuni(data);
+      } catch (error) {
+        console.error("Error loading comuni:", error);
+        setComuni([]);
+      }
+    };
+
+    loadComuni();
+  }, [readCsvFile]);
+
+  useEffect(() => {
+    const contatto = vettoreContatti.find(
+      (contatto) => contatto.id === parseInt(id, 10)
+    );
     if (contatto) {
       setFormData({
         nome: contatto.nome,
         cognome: contatto.cognome,
         nascita: contatto.nascita || "",
-        image: contatto.image || "",
+        image: contatto.image || null,
         email: contatto.email,
-        telefono: contatto.telefono || "",
-        citta: contatto.citta || "",
+        telefono: contatto.telefono ? contatto.telefono.slice(3) : "",
+        comune: contatto.comune || "",
         indirizzo: contatto.indirizzo || "",
       });
+      setTelefono(contatto.telefono ? contatto.telefono.slice(3) : "");
     }
-  }, [contatto]);
+  }, [vettoreContatti, id]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image" && files.length > 0) {
       setImageFile(files[0]);
+    } else if (name === "telefono") {
+      setTelefono(value);
     } else {
       setFormData({
         ...formData,
@@ -58,20 +79,21 @@ function ModificaContatto({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const fullTelefono = telefono ? `+39${telefono}` : "";
+    const finalTelefono = fullTelefono === "+39" ? "" : fullTelefono;
+
     const updatedContatto = {
       ...formData,
+      telefono: finalTelefono,
       image: imageFile ? URL.createObjectURL(imageFile) : formData.image,
     };
 
     const submissionData = new FormData();
-    submissionData.append("nome", updatedContatto.nome);
-    submissionData.append("cognome", updatedContatto.cognome);
-    submissionData.append("nascita", updatedContatto.nascita); // Append nascita to FormData
-    submissionData.append("email", updatedContatto.email);
+    Object.entries(updatedContatto).forEach(([key, value]) => {
+      submissionData.append(key, value);
+    });
 
-    submissionData.append("telefono", updatedContatto.telefono);
-    submissionData.append("citta", updatedContatto.citta);
-    submissionData.append("indirizzo", updatedContatto.indirizzo);
+  
 
     if (imageFile) {
       submissionData.append("image", imageFile);
@@ -88,11 +110,7 @@ function ModificaContatto({
 
       if (response.ok) {
         alert("Contatto aggiornato");
-
-        // Call the onUpdateContatto function to update state in parent component
         onUpdateContatto(parseInt(id, 10), updatedContatto);
-
-        // Optionally, navigate to the next contact if available
         navigateNextContact();
       } else {
         const errorText = await response.text();
@@ -105,13 +123,11 @@ function ModificaContatto({
     }
   };
 
-  // Function to navigate to the next contact
   const navigateNextContact = () => {
     const currentIndex = selectedContacts.findIndex(
       (contactId) => contactId === parseInt(id, 10)
     );
 
-    // Remove the updated contact from the selectedContacts array
     if (currentIndex !== -1) {
       updateSelectedContacts((prevSelected) =>
         prevSelected.filter((contactId) => contactId !== parseInt(id, 10))
@@ -121,28 +137,26 @@ function ModificaContatto({
     if (currentIndex !== -1 && currentIndex < selectedContacts.length - 1) {
       const nextId = selectedContacts[currentIndex + 1];
       navigate(`/Modifica/${nextId}`);
-      // Optionally handle state update or feedback after bulk update
       alert("Contatto aggiornato");
     } else {
-      navigate("/"); // Navigate to home page if no more contacts to navigate
+      navigate("/");
     }
   };
 
-  if (!contatto) {
-    return <div>Loading...</div>; // Add a loading indicator while contatto is being fetched
+  if (!formData.nome) {
+    return <div>Loading...</div>;
   }
 
   return (
     <div className="container mt-5">
-      <h3 style={{textAlign:"center"}}>Modifica Contatto</h3>
-      <hr></hr>
-      <form onSubmit={handleSubmit} >
+      <h3 style={{ textAlign: "center" }}>Modifica Contatto</h3>
+      <hr />
+      <form onSubmit={handleSubmit}>
         <div className="row">
           {Object.keys(formData).map((key) => (
             <div key={key} className="col-md-6 mb-3">
               <label htmlFor={`input-${key}`} className="form-label">
                 {key.charAt(0).toUpperCase() + key.slice(1)}
-                {/* {key !== "telefono" && <span style={{ color: "red" }}> *</span>}: */}
               </label>
               {key === "image" ? (
                 <input
@@ -152,32 +166,73 @@ function ModificaContatto({
                   id={`input-${key}`}
                   name={key}
                 />
-              ) : (
-                <input
-                  onChange={handleChange}
-                  type={key === "nascita" ? "date" : "text"}
+              ) : key === "comune" ? (
+                <select
                   className="form-control"
                   id={`input-${key}`}
                   name={key}
                   value={formData[key]}
-                  placeholder={formData[key]} // Display placeholder if value is empty
-                //  required={key === "nome" || key === "cognome" || key === "email"}
-                  disabled={key === "nascita" || key === "nome" || key === "cognome" || key === "email"} // Disable nascita field
+                  onChange={handleChange}
+                >
+                  <option value="">Seleziona Comune o lascia questa scelta</option>
+                  {comuni.map((loc) => (
+                    <option key={loc.comune} value={loc.comune}>
+                      {loc.comune}
+                    </option>
+                  ))}
+                </select>
+              ) : key === "nascita" ? (
+                <input
+                  onChange={handleChange}
+                  type="date"
+                  className="form-control"
+                  id={`input-${key}`}
+                  name={key}
+                  value={formData[key] || ""}
+                  max={new Date().toISOString().split("T")[0]}
+                />
+              ) : key === "telefono" ? (
+                <div className="input-group">
+                  <span className="input-group-text">+39</span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id={`input-${key}`}
+                    name={key}
+                    pattern="[0-9]{10}" // Italian phone number, 10 digits
+                    onChange={handleChange}
+                    value={telefono}
+                    placeholder="10 cifre"
+                  />
+                </div>
+              ) : (
+                <input
+                  onChange={handleChange}
+                  type={key==="email"?"email":"text"}
+                  className="form-control"
+                  id={`input-${key}`}
+                  name={key}
+                  value={formData[key]}
+                  placeholder={formData[key]}
+                  disabled={["nome", "cognome","email"].includes(key)}
                 />
               )}
             </div>
           ))}
         </div>
-       {/*  <p style={{ fontStyle: "italic", color: "gray" }}>
-          I campi contrassegnati con "*" sono obbligatori.
-        </p> */}
-
-        <button type="submit" className="btn btn-dark my-4" >
+        <div className="row justify-content-center">
+        <button type="submit" className="btn btn-dark my-4" style={{ width: "20%", marginRight: "10px" }}>
           Salva Modifiche
         </button>
+        <button onClick={handleGoHome} className="btn btn-dark my-4" style={{ width: "20%" }}>
+          Home
+        </button>
+      </div>
       </form>
     </div>
   );
 }
 
 export default ModificaContatto;
+
+

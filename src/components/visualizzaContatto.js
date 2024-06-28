@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import bgImg from "../images/bg3.png";
+import userFoto from "../images/user1.png";
 
 function ViasualizzaContatto(props) {
   const {mycolor, setMycolor}=useState();
@@ -56,6 +57,8 @@ function ViasualizzaContatto(props) {
   const redirectToModifica = () => {
     navigate(`/Modifica/${index}`);
   }; */
+
+  
   const handleGoHome = () => {
     navigate("/"); // Redirect to PrimaPagina
   };
