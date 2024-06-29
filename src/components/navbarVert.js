@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 
 function NavbarVert({
-  vettoreContatti,
+  vettoreContattiSorted,
   title,
   onBulkDelete,
   handleCheckboxChange,
@@ -27,8 +27,8 @@ function NavbarVert({
         selectedContacts.length > 1
           ? alert("Selezionati contatti eliminati")
           : selectedContacts.length === 1
-          ? alert("Selezionato contatto eliminato")
-          : alert("Non ci sono contatti selezionati");
+            ? alert("Selezionato contatto eliminato")
+            : alert("Non ci sono contatti selezionati");
         setSelectedContacts([]);
       } else {
         const errorText = await response.text();
@@ -49,19 +49,13 @@ function NavbarVert({
     }
   };
 
-  // Sort the contacts in alphabetical order
-  const sortedContatti = [...vettoreContatti].sort((a, b) => {
-    const nameA = `${a.nome} ${a.cognome}`.toUpperCase();
-    const nameB = `${b.nome} ${b.cognome}`.toUpperCase();
-    if (nameA < nameB) {
-      return -1;
-    }
-    if (nameA > nameB) {
-      return 1;
-    }
-    return 0;
+/*   // Sort the contacts in alphabetical order by last name, then first name
+  const sortedContatti = [...vettoreContattiSorted].sort((a, b) => {
+    const nameA = `${a.cognome} ${a.nome}`.toUpperCase();
+    const nameB = `${b.cognome} ${b.nome}`.toUpperCase();
+    return nameA.localeCompare(nameB);
   });
-
+ */
   return (
     <nav
       className="px-2 py-4"
@@ -74,7 +68,7 @@ function NavbarVert({
         style={{ height: "40vh", overflowY: "auto" }}
       >
         <ul className="nav flex-column">
-          {sortedContatti
+          {vettoreContattiSorted
             .filter((elemento) => elemento.abilitato === 1)
             .map((elemento) => (
               <li
@@ -91,7 +85,7 @@ function NavbarVert({
                   className="nav-link text-dark"
                   to={`/VisualizzaContatto/${elemento.id}`}
                 >
-                  {`${elemento.nome} ${elemento.cognome}`}
+                  {`${elemento.cognome} ${elemento.nome} `}
                 </Link>
               </li>
             ))}

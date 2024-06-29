@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Modal from './modal'; // Adjust the path as needed
 import bgImg from '../images/bgImg1.png';
 
-function PrimaPagina({ vettoreContatti, title }) {
+function PrimaPagina({ vettoreContattiSorted, title }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [startsWithQuery, setStartsWithQuery] = useState('');
   const [filteredContatti, setFilteredContatti] = useState([]);
@@ -20,11 +20,12 @@ function PrimaPagina({ vettoreContatti, title }) {
   // Function to filter contacts based on search query
   const handleSearch = (query) => {
     const searchString = query.toLowerCase();
-    const filteredContacts = vettoreContatti.filter((contatto) =>
+    const filteredContacts = vettoreContattiSorted.filter((contatto) =>
       contatto.nome.toLowerCase().includes(searchString) ||
       contatto.cognome.toLowerCase().includes(searchString) ||
       contatto.indirizzo.toLowerCase().includes(searchString) ||
-      contatto.comune.toLowerCase().includes(searchString)
+      contatto.comune.toLowerCase().includes(searchString)||
+      contatto.email.toLowerCase().includes(searchString)
     );
     setFilteredContatti(filteredContacts);
   };
@@ -32,7 +33,7 @@ function PrimaPagina({ vettoreContatti, title }) {
   // Function to filter contacts by nome or cognome starting with a specific sequence
   const handleStartsWithSearch = (query) => {
     const startsWithString = query.toLowerCase();
-    const filteredContacts = vettoreContatti.filter((contatto) =>
+    const filteredContacts = vettoreContattiSorted.filter((contatto) =>
       contatto.nome.toLowerCase().startsWith(startsWithString) ||
       contatto.cognome.toLowerCase().startsWith(startsWithString)
     );
@@ -97,8 +98,8 @@ function PrimaPagina({ vettoreContatti, title }) {
         style={{ maxWidth: '400px', margin: 'auto', marginBottom: '20px' }}
       />
       <hr />
-      <div className="row mt-5">
-        <div className="col-4">
+      <div className="row mt-5 mx-4">
+        <div className="col-4" style={{boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)'}}>
           {/* List of filtered contacts */}
           
           {filteredContatti.length > 0 && (
@@ -109,7 +110,7 @@ function PrimaPagina({ vettoreContatti, title }) {
                   <li className="nav-item" key={contatto.id}>
                     {/* Instead of Link, open modal on click */}
                     <button className="nav-link text-dark" onClick={() => openModal(contatto)}>
-                      {`${contatto.nome} ${contatto.cognome}`}
+                      {`${contatto.cognome} ${contatto.nome} `}
                     </button>
                   </li>
                 ))}

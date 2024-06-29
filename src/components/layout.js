@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom';
 import '../App.css';
 import NavbarVert from '../components/navbarVert';
 
-function Layout({ vettoreContatti, title, onBulkDelete, selectedContacts, updateSelectedContacts, handleCheckboxChange, setSelectedContacts }) {
+function Layout({ vettoreContattiSorted, title, onBulkDelete, selectedContacts, updateSelectedContacts, handleCheckboxChange, setSelectedContacts }) {
 
   return (
     <div className="container-fluid">
@@ -13,7 +13,7 @@ function Layout({ vettoreContatti, title, onBulkDelete, selectedContacts, update
 
           <NavbarVert
             // vettoreLink={props.vettoreLink}
-            vettoreContatti={vettoreContatti}
+            vettoreContattiSorted={vettoreContattiSorted}
             title={title}
             onBulkDelete={onBulkDelete}
             selectedContacts={selectedContacts}

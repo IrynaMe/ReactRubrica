@@ -15,6 +15,14 @@ function App6(props) {
   const [loading, setLoading] = useState(true);
   const ip_server = window.ip_server_rest;
   const porta_server = window.porta_server_rest;
+
+    // Sort the contacts in alphabetical order by last name, then first name
+    const sortedContatti = [...vettoreContatti].sort((a, b) => {
+      const nameA = `${a.cognome} ${a.nome}`.toUpperCase();
+      const nameB = `${b.cognome} ${b.nome}`.toUpperCase();
+      return nameA.localeCompare(nameB);
+    });
+  
   
 const readCsvFile = async (filePath) => {
   try {
@@ -143,7 +151,7 @@ const readCsvFile = async (filePath) => {
           path="/"
           element={
             <Layout
-              vettoreContatti={vettoreContatti}
+              vettoreContattiSorted={sortedContatti}
               title="Visualizza contatti"
               onBulkDelete={handleBulkDelete}
               selectedContacts={selectedContacts}
@@ -157,14 +165,14 @@ const readCsvFile = async (filePath) => {
           <Route index element={
             <PrimaPagina 
             title="Benvenuti alla rubrica"
-            vettoreContatti={vettoreContatti}
+            vettoreContattiSorted={sortedContatti}
             />} />
 
           <Route
             path="/VisualizzaContatto/:indiceUtente"
             element={
               <ViasualizzaContatto
-                vettoreContatti={vettoreContatti}
+                vettoreContattiSorted={sortedContatti}
                 title="Dettagli del contatto"
                 elimina={cancella}
                 

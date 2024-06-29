@@ -5,10 +5,10 @@ import userFoto from "../images/user1.png";
 
 function ViasualizzaContatto(props) {
   const { indiceUtente } = useParams();
-  const { vettoreContatti, elimina } = props;
+  const { vettoreContattiSorted, elimina } = props;
   const navigate = useNavigate();
   const index = parseInt(indiceUtente, 10);
-  const contatto = vettoreContatti.find((contatto) => contatto.id === index);
+  const contatto = vettoreContattiSorted.find((contatto) => contatto.id === index);
 
   if (!contatto) {
     return <div>Loading...</div>; // Add a loading indicator while contatto is being fetched
