@@ -24,7 +24,8 @@ function AddContatto(props) {
   useEffect(() => {
     const loadData = async () => {
       const data = await readCsvFile(comuniFile);
-      setComuni(data);
+      const sortedComuni = data.sort((a, b) => a.comune.localeCompare(b.comune));
+      setComuni(sortedComuni);
     };
     loadData();
   }, [readCsvFile]);
@@ -55,19 +56,18 @@ function AddContatto(props) {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    // Check if email already exists
-    const emailExists = vettoreContatti.some(contact => contact.email === formData.email);
+    event.preventDefault(); // Ensure this line is correct and 'event' is properly passed
+  
+    const emailExists = vettoreContatti.some((contact) => contact.email === formData.email);
     if (emailExists) {
-      setError('Email già in uso, inserisci un\'altra email.');
+      setError("Email già in uso, inserisci un'altra email.");
       return;
     }
-
+  
     const formDataToSend = new FormData();
     const fullTelefono = telefono ? `+39${telefono}` : "";
     const finalTelefono = fullTelefono === "+39" ? "" : fullTelefono;
-
+  
     Object.entries({
       ...formData,
       telefono: finalTelefono,
@@ -75,18 +75,18 @@ function AddContatto(props) {
     }).forEach(([key, value]) => {
       formDataToSend.append(key, value);
     });
-
+  
     try {
       const response = await fetch("http://localhost:8080/scuola/rubricainsert", {
         method: "POST",
         body: formDataToSend,
       });
-
+  
       if (response.ok) {
         const result = await response.json();
         console.log("Success:", result);
         alert("Contatto aggiunto");
-        onAddContatto(result);  // Call function to update contacts
+        onAddContatto(result);
         navigate("/");
       } else {
         console.error("Error:", response.statusText);
@@ -95,9 +95,12 @@ function AddContatto(props) {
       console.error("Error:", error);
     }
   };
+  
+
   const handleGoHome = () => {
-    navigate("/"); // Redirect to PrimaPagina
+    navigate("/");
   };
+
   const styles = {
     backgroundImage: `url(${bgImg1})`,
     backgroundSize: "cover",
