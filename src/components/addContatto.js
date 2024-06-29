@@ -4,9 +4,10 @@ import comuniFile from "../files/comuni.csv";
 import bgImg1 from "../images/bgImg1.png";
 
 function AddContatto(props) {
-  const { vettoreFormInfo, onAddContatto, readCsvFile } = props;
+  const { vettoreFormInfo, onAddContatto, readCsvFile, vettoreContatti, title } = props;
   const navigate = useNavigate();
   const [comuni, setComuni] = useState([]);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     nome: "",
     cognome: "",
@@ -15,14 +16,10 @@ function AddContatto(props) {
     telefono: "",
     comune: "",
     indirizzo: "",
-    nascita: "", // This will hold the formatted date string
+    nascita: "",
   });
 
   const [telefono, setTelefono] = useState("");
-  const handleGoHome = () => {
-    navigate("/"); // Redirect to PrimaPagina
-  };
-
 
   useEffect(() => {
     const loadData = async () => {
@@ -59,16 +56,22 @@ function AddContatto(props) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const formDataToSend = new FormData();
 
-    // Check if the phone number is just the prefix +39
+    // Check if email already exists
+    const emailExists = vettoreContatti.some(contact => contact.email === formData.email);
+    if (emailExists) {
+      setError('Email già in uso, inserisci un\'altra email.');
+      return;
+    }
+
+    const formDataToSend = new FormData();
     const fullTelefono = telefono ? `+39${telefono}` : "";
     const finalTelefono = fullTelefono === "+39" ? "" : fullTelefono;
 
     Object.entries({
       ...formData,
       telefono: finalTelefono,
-      abilitato: "1", // Default value for abilitato
+      abilitato: "1",
     }).forEach(([key, value]) => {
       formDataToSend.append(key, value);
     });
@@ -83,7 +86,8 @@ function AddContatto(props) {
         const result = await response.json();
         console.log("Success:", result);
         alert("Contatto aggiunto");
-        navigate("/"); // Navigate to home page if no more contacts to navigate
+        onAddContatto(result);  // Call function to update contacts
+        navigate("/");
       } else {
         console.error("Error:", response.statusText);
       }
@@ -91,28 +95,25 @@ function AddContatto(props) {
       console.error("Error:", error);
     }
   };
-
+  const handleGoHome = () => {
+    navigate("/"); // Redirect to PrimaPagina
+  };
   const styles = {
-    // textAlign: "center",
-    //color: "white", #ffbd37
-   // background: "#ffbd37",
-    //background: "#ffc107",
-   //backgroundImage: `url(${bgImg1})`,
-    //backgroundSize: "cover",
-   // backgroundRepeat: "no-repeat",
-   // backgroundPosition: "bottom",
+    backgroundImage: `url(${bgImg1})`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
     fontSize: "1rem",
     width: "100%",
-    //  marginTop: "10%",
-    height: "100vh",
-    borderRadius:"0px",
-    border:"0px",
-   // boxShadow: "20px 0 20px 0 rgba(93, 0, 0, 1)",
-   // minWidth: "400px"
+    minHeight: "100vh",
+    borderRadius: "0px",
+    border: "0px",
   };
+
   return (
-    <div className="container mt-5" >
-      <h3 className="  " style={{ textAlign: "center" }}>{props.title}</h3>
+    <div className="container" style={styles}>
+      <br />
+      <br />
+      <h3 style={{ textAlign: "center" }}>{title}</h3>
       <hr />
       <form onSubmit={handleSubmit}>
         <div className="row">
@@ -155,11 +156,11 @@ function AddContatto(props) {
                   className="form-control"
                   id={`input-${elem}`}
                   name={elem}
-                  max={new Date().toISOString().split("T")[0]} // Set max date to today
+                  max={new Date().toISOString().split("T")[0]}
                   onChange={handleChange}
                   value={formData[elem] || ""}
                 />
-              )  : elem === "telefono" ? (
+              ) : elem === "telefono" ? (
                 <div className="input-group">
                   <span className="input-group-text">+39</span>
                   <input
@@ -167,7 +168,7 @@ function AddContatto(props) {
                     className="form-control"
                     id={`input-${elem}`}
                     name={elem}
-                    pattern="[0-9]{10}" // Italian phone number, 10 digits
+                    pattern="[0-9]{10}"
                     onChange={handleChange}
                     value={telefono}
                     placeholder="10 cifre"
@@ -179,32 +180,33 @@ function AddContatto(props) {
                   className="form-control"
                   id={`input-${elem}`}
                   name={elem}
-                  placeholder={(elem === "nome" || elem === "cognome") ? "min 2 caratteri" : undefined }
+                  placeholder={["nome", "cognome"].includes(elem) ? "min 2 caratteri" : undefined}
                   minLength={["nome", "cognome"].includes(elem) ? 2 : undefined}
                   required={["nome", "cognome", "email"].includes(elem)}
                   onChange={handleChange}
                   value={formData[elem]}
                 />
               )}
+              {elem === "email" && error && (
+                <p style={{ color: "red", marginTop: "5px" }}>{error}</p>
+              )}
             </div>
           ))}
         </div>
-        <p style={{ fontStyle: "italic", color: "gray" }}>
+        <p style={{ fontStyle: "italic", color: "red" }}>
           I campi contrassegnati con "*" sono obbligatori
         </p>
         <div className="row justify-content-center">
-        <button type="submit" className="btn btn-dark my-4" style={{ width: "20%", marginRight: "10px" }}>
-          Salva contatto
-        </button>
-        <button onClick={handleGoHome} className="btn btn-dark my-4" style={{ width: "20%" }}>
-          Home
-        </button>
-      </div>
-    </form>
-  </div>
-);
+          <button type="submit" className="btn btn-dark my-4" style={{ width: "20%", marginRight: "10px" }}>
+            Salva contatto
+          </button>
+          <button onClick={handleGoHome} className="btn btn-dark my-4" style={{ width: "20%" }}>
+            Home
+          </button>
+        </div>
+      </form>
+    </div>
+  );
 }
 
 export default AddContatto;
-
-

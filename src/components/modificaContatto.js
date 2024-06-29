@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import comuniFile from "../files/comuni.csv";
+import bgImg1 from "../images/bgImg1.png";
 
 function ModificaContatto({
   vettoreContatti,
@@ -146,9 +147,28 @@ function ModificaContatto({
   if (!formData.nome) {
     return <div>Loading...</div>;
   }
-
+  const styles = {
+    // textAlign: "center",
+    //color: "white", #ffbd37
+   // background: "#ffbd37",
+    //background: "#ffc107",
+   backgroundImage: `url(${bgImg1})`,
+  backgroundSize: "cover",
+   backgroundRepeat: "no-repeat",
+   // backgroundPosition: "bottom",
+    fontSize: "1rem",
+    width: "100%",
+    //  marginTop: "10%",
+    minHeight: "100vh",
+    borderRadius:"0px",
+    border:"0px",
+   // boxShadow: "20px 0 20px 0 rgba(93, 0, 0, 1)",
+   // minWidth: "400px"
+  };
   return (
-    <div className="container mt-5">
+    <div className="container"  style={styles} >
+            <br></br>
+            <br></br>
       <h3 style={{ textAlign: "center" }}>Modifica Contatto</h3>
       <hr />
       <form onSubmit={handleSubmit}>

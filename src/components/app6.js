@@ -176,6 +176,7 @@ const readCsvFile = async (filePath) => {
                 title="Aggiungi un nuovo contatto"
                 onAddContatto={handleAddContatto}
                 readCsvFile={readCsvFile}
+                vettoreContatti={vettoreContatti}
               />
             }
           />

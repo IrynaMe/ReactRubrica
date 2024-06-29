@@ -1,5 +1,5 @@
 import React from 'react';
-import bgImg from "../images/background1.png";
+import bgImg from "../images/bgImg1.png";
 
 function PrimaPagina(props) {
 
@@ -11,14 +11,16 @@ function PrimaPagina(props) {
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
      fontSize: "40px",
-    width: "96%",
+    width: "100%",
     //  marginTop: "10%",
-    height: "100vh",
+    minHeight: "100vh",
   };
   return (
     
-    <div className="p-4" style={styles}>
-      <h3>{props.title}</h3>
+    <div className="container" style={styles} >
+            <br></br>
+            
+      <h3 style={{textAlign:"center"}}>{props.title}</h3>
   
     </div>
   );
