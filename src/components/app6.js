@@ -154,7 +154,11 @@ const readCsvFile = async (filePath) => {
             />
           }
         >
-          <Route index element={<PrimaPagina title="Benvenuti alla rubrica" />} />
+          <Route index element={
+            <PrimaPagina 
+            title="Benvenuti alla rubrica"
+            vettoreContatti={vettoreContatti}
+            />} />
 
           <Route
             path="/VisualizzaContatto/:indiceUtente"

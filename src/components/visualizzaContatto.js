@@ -24,8 +24,8 @@ function ViasualizzaContatto(props) {
   const styles = {
     // textAlign: "center",
     //color: "white", #ffbd37
-    background: "#ffbd37",
-    //background: "#ffc107",
+    //background: "#ffbd37",
+    background: "#ffc107",
     //backgroundImage: `url(${bgImg})`,
     //backgroundSize: "cover",
    // backgroundRepeat: "no-repeat",
