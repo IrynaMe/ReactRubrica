@@ -89,7 +89,7 @@ const readCsvFile = async (filePath) => {
     const formData = new FormData(e.target);
     formData.append("abilitato", "1");
 
- // Format data di nascita as a date string (assuming it's a Date object)
+ // Format data di nascita as a date string 
  formData.append("nascita", formData.get("nascita").toISOString());
     try {
       const response = await fetch("http://" + ip_server + ":" + porta_server + "/scuola/rubricainsert", {
@@ -158,7 +158,7 @@ const readCsvFile = async (filePath) => {
               updateSelectedContacts={updateSelectedContacts}
               handleCheckboxChange={handleCheckboxChange}
               setSelectedContacts={setSelectedContacts}
-              loading={loading} // Pass loading state to Layout x evitare errore when server is down
+              loading={loading} // Loading state to avoid error when server is down
             />
           }
         >

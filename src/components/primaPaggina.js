@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Modal from './modal'; // Adjust the path as needed
+import Modal from './modal'; 
 import bgImg from '../images/bgImg1.png';
 
 function PrimaPagina({ vettoreContattiSorted, title }) {

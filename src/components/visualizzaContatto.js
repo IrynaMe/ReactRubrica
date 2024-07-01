@@ -11,7 +11,7 @@ function ViasualizzaContatto(props) {
   const contatto = vettoreContattiSorted.find((contatto) => contatto.id === index);
 
   if (!contatto) {
-    return <div>Loading...</div>; // Add a loading indicator while contatto is being fetched
+    return <div>Loading...</div>; // Loading indicator while contatto is being fetched
   }
 
   const { image, ...contattoDetails } = contatto;
@@ -30,27 +30,28 @@ function ViasualizzaContatto(props) {
   const imgStyle = {
     height: "200px",
     width: "auto",
-    margin: "20px auto 0 auto", // Center the image horizontally
+    margin: "20px auto 20px  auto", // Center the img horizontally
+    //boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)'
   };
 
   return (
     <div className="row justify-content-center">
-      <div className="card p-4 card-warning" style={styles}>
+      <div className="card p-2 card-warning" style={styles}>
         <h3 style={{ marginTop: "15px", textAlign: "center" }}>
           {props.title}
         </h3>
         <hr style={{ width: "96%" }}></hr>
         <div 
-          className="row justify-content-center mt-5" 
+          className="row col-md-12 py-4 justify-content-center mt-5" 
           style={{ boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
            // border: '1px solid white',
-    borderRadius: '8px', 
-            width: "80%", 
+            borderRadius: '8px', 
+            width: "70%", 
             margin: "0 auto 30px auto" }}
         >
-          <div className="col-md-8">
-            <div className="row justify-content-center">
-              <div className="col-lg-6">
+          <div className="col-md-12">
+            <div className="row " style={{paddingLeft:"60px",paddingRight:"60px"}}>
+              <div className="col-lg-6 col-6 " >
                 <img
                   src={imageUrl || userFoto}
                   className="card-img"
@@ -58,10 +59,12 @@ function ViasualizzaContatto(props) {
                   style={imgStyle}
                 />
               </div>
-              <div className="col-lg-6">
+              <div className="col-lg-6" 
+             
+              >
                 <div className="card-body">
                   {Object.keys(contattoDetails)
-                    .filter((key) => key !== "abilitato") // Exclude 'abilitato' key from rendering
+                    .filter((key) => key !== "abilitato") // Exclude 'abilitato' 
                     .map((key) => (
                       <p key={key}>
                         {key}: {contattoDetails[key]}

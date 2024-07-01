@@ -16,7 +16,7 @@ const Modal = ({ isOpen, closeModal, children }) => {
 };
 
 const modalContentStyle = {
-    background: 'rgba(255, 193, 7, 0.5)', // Background color with 50% opacity
+    background: 'rgba(255, 193, 7, 0.5)', // 50% opacity
    // background:"#ffc107",
     //border: '1px solid white',
     borderRadius: '8px',
@@ -29,12 +29,12 @@ const modalContentStyle = {
   };
 
 const closeIconStyle = {
-  position: 'absolute',      // Position absolute for precise placement
-  top: '5px',               // Adjust top position as needed
-  right: '5px',             // Adjust right position as needed
-  fontSize: '36px',          // Font size of the close icon
-  cursor: 'pointer',         // Change cursor to pointer on hover
-  zIndex: '100',             // Ensure the close icon is above other content
+  position: 'absolute',      
+  top: '5px',              
+  right: '5px',            
+  fontSize: '36px',          
+  cursor: 'pointer',         
+  zIndex: '100',             
 };
 
 export default Modal;
